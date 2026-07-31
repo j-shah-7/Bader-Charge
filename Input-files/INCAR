@@ -1,0 +1,31 @@
+SYSTEM = Static charge density for Bader analysis
+
+# Start from the supplied POSCAR/POTCAR without requiring restart files
+ISTART = 0
+ICHARG = 2
+
+# Electronic minimization
+PREC   = Accurate
+ENCUT  = 520
+EDIFF  = 1E-6
+NELM   = 100
+NELMIN = 2
+ALGO   = Fast
+LREAL  = Auto
+ADDGRID = .TRUE.
+LASPH   = .TRUE.
+
+# Occupations
+ISMEAR = 1
+SIGMA  = 0.10
+
+# Dispersion
+IVDW = 11
+
+# Static calculation and Bader outputs
+IBRION = -1
+NSW    = 0
+ISYM   = 0
+LAECHG = .TRUE.
+LCHARG = .TRUE.
+LWAVE  = .FALSE.
