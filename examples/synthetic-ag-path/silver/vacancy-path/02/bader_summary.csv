@@ -1,0 +1,4 @@
+element,atom_count,bader_electrons,charge_transfer_e,nelect,bader_total,abs_difference,tolerance,status
+Ag,1,10.30,0.70,24.00,24.00,0.00,0.05,OK
+B,1,3.00,0.00,24.00,24.00,0.00,0.05,OK
+N,2,10.70,-0.70,24.00,24.00,0.00,0.05,OK
