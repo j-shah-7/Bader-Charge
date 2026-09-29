@@ -1,4 +1,48 @@
-# VASP Bader workflow for h-BN structures
+# Bader charge analysis for metal/h-BN switching paths
+
+Python and SLURM tools to prepare static VASP charge-density calculations, run
+Bader partitioning, and compare atom-resolved charge transfer across images of
+Au, Ag, or Cu interacting with h-BN. This repository supports the computational
+workflow behind studies of metal migration and defect-assisted switching in
+two-dimensional materials.
+
+**What it produces:** `bader_per_atom.csv` for each image,
+`bader_summary.csv` for each element, combined image tables, and plots of
+charge transfer along a path. Here `charge_transfer_e = POTCAR ZVAL - Bader
+electrons`; a positive value indicates electron loss by that atom.
+
+## Try the analysis without VASP
+
+A small **synthetic illustration**, clearly separate from research results,
+is in [`examples/synthetic-ag-path/`](examples/synthetic-ag-path/). It contains
+three image folders with four atoms each, so you can try the collection and
+plotting scripts without VASP, POTCAR, HPC access, or the Bader executable:
+
+```bash
+python3 analysis-scripts/collect_bader_results.py examples/synthetic-ag-path \
+    --output /tmp/example_bader_summary.csv
+python3 analysis-scripts/neb_charge_summary.py /tmp/example_bader_summary.csv \
+    --output /tmp/example_neb_charge_summary.csv
+python3 analysis-scripts/plot_migrating_metal.py \
+    examples/synthetic-ag-path/silver/vacancy-path --atom-index 1 \
+    --output /tmp/example_ag_charge.png
+```
+
+Only the last command requires Matplotlib. In this illustrative example the
+selected Ag atom changes from +0.20 to +0.70 e across images 00–02. These
+numbers are invented to demonstrate the data format and **are not calculated
+research results**. The script requires an explicit atom index because the
+migrating atom cannot safely be inferred from element alone.
+
+## Full VASP workflow
+
+The full setup requires your own licensed VASP installation, POTCAR files,
+structure inputs, and cluster configuration. Neither VASP nor POTCAR data is
+provided here. Review `Input-files/bader-441.sh` and
+`Input-files/bader-gamma.sh` before submitting jobs: the module versions,
+partition, email, and VASP binary paths are site-specific. The bundled Bader
+executable should likewise be checked against its redistribution terms before
+reuse or redistribution.
 
 This workflow prepares, submits, postprocesses, and summarizes static Bader
 calculations for:
@@ -11,7 +55,7 @@ atom means `isolated`; more than one means `heterostructure`.
 
 ## Where the files go
 
-Merge the downloaded workflow into the main `Bader` folder so the layout is:
+For a full calculation, put this repository's files in a working directory with your own `POSCAR-withpotcar/` inputs. The expected layout is:
 
 ```text
 Bader/
@@ -30,16 +74,15 @@ Bader/
 ├── postprocess-scripts/
 │   ├── bader
 │   └── chgsum.pl
-└── POSCAR-withpotcar/
+└── POSCAR-withpotcar/   # user-provided; absent from this repository
 ```
 
-The supplied `bader-441.sh` and `bader-gamma.sh` are based on the Pathfinder
-SLURM scripts supplied by the user. They retain the VASP executable paths and
-the requested resource settings.
+The included SLURM templates were configured for one HPC site. Edit the module loads, executable paths, scheduler settings, and email before using them elsewhere.
 
 ## 1. Prepare all folders
 
-Run from the main `Bader` folder:
+The repository does not include `POSCAR-withpotcar/`; create it with your own
+POSCAR/POTCAR inputs before running setup. Run from the repository root:
 
 ```bash
 chmod +x submit_all.sh postprocess_all.sh
@@ -103,7 +146,7 @@ python3 analysis-scripts/plot_overlapped_bader.py \
   Bader-calculations/gold/bvac-isolated-vert-diff
 ```
 
-The plotting scripts require Matplotlib. The calculation and CSV analysis
+The plotting scripts require Matplotlib (`python3 -m pip install matplotlib`). The calculation and CSV analysis
 scripts use only the Python standard library.
 
 `delta_q.py` remains available for upgrading old two-column
@@ -118,7 +161,6 @@ silently require WAVECAR/CHGCAR restart files. It retains the original
 were spin-polarized or used different occupation settings, update this INCAR
 to match them before preparing the folders.
 
-The supplied SLURM scripts retain `-c 4` and `OMP_NUM_THREADS=2` exactly as in
-the user's working scripts. This reserves four CPUs per MPI task while using
-two OpenMP threads. Confirm that this is intentional for the local VASP build
-and scheduler policy before submitting all jobs.
+The committed SLURM templates request `-c 2` and set `OMP_NUM_THREADS=2`.
+Confirm the MPI/OpenMP layout, number of tasks, memory, and scheduler policy
+for your site before submitting jobs.
