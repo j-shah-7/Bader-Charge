@@ -1,0 +1,5 @@
+atom_index,element,species_index,x_A,y_A,z_A,bader_electrons,reference_valence,charge_transfer_e,min_distance_A,atomic_volume_A3
+1,Ag,1,0,0,0,10.55,11,0.45,0,0
+2,B,1,0,0,0,2.95,3,0.05,0,0
+3,N,1,0,0,0,5.25,5,-0.25,0,0
+4,N,2,0,0,0,5.25,5,-0.25,0,0
