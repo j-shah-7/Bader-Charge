@@ -1,0 +1,17 @@
+# Proprietary VASP input and large generated outputs
+POTCAR
+**/POTCAR
+WAVECAR
+**/WAVECAR
+CHGCAR
+**/CHGCAR
+AECCAR*
+**/AECCAR*
+OUTCAR
+**/OUTCAR
+vasprun.xml
+**/vasprun.xml
+Bader-calculations/
+POSCAR-withpotcar/
+__pycache__/
+*.pyc
